@@ -1,0 +1,21 @@
+name: movenet-dance-demo
+
+channels:
+    - nvidia
+    - conda-forge
+    - defaults
+
+dependencies:
+    - python=3.7
+    - cudatoolkit=11.3
+    - cudnn=8.2
+    - cuda-nvcc
+    - ipykernel
+    - ffmpeg
+    - pip
+    - pip:
+        - tensorflow==2.7.0
+        - tensorflow-hub==0.12.0
+        - opencv-python==4.5.4.60
+        - jupyterlab
+        - seaborn
