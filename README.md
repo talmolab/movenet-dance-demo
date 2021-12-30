@@ -3,6 +3,7 @@
 A real-time demo running on webcam feed that guides subject to move to match pre-defined target poses.
 
 ![Match the target pose!](screenshot.png "Screenshot of live demo.")
+
 *Move your body to match each of the target poses on the right!*
 
 ## Setup
