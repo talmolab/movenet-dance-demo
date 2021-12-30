@@ -1,7 +1,9 @@
 # Real-time pose matching demo
 
-Real-time demo running on webcam feed that guides subject to move to match pre-defined target poses.
+A real-time demo running on webcam feed that guides subject to move to match pre-defined target poses.
 
+![Match the target pose!](screenshot.png "Screenshot of live demo.")
+*Move your body to match each of the target poses on the right!*
 
 ## Setup
 ```
@@ -42,6 +44,8 @@ python live_demo.py --tolerance 0.7
 
 
 ## Credits
-This demo was written by [Talmo Pereira](https://talmopereira.com) to be presented at the [SICB 2022 Annual Meeting](http://burkclients.com/sicb/meetings/2022/site/workshops.html).
+This demo was written by [Talmo Pereira](https://talmopereira.com) at the Salk Institute for Biological Studies to be presented at the [SICB 2022 Annual Meeting](http://burkclients.com/sicb/meetings/2022/site/workshops.html).
 
 This code uses [MoveNet](https://blog.tensorflow.org/2021/05/next-generation-pose-detection-with-movenet-and-tensorflowjs.html) for pose estimation by Ronny Votel, Na Li and other contributors at Google.
+
+The target pose data is courtesy of the [danceTactics](http://www.dancetactics.org/about) crew directed by [Keith A. Thompson](https://musicdancetheatre.asu.edu/profile/keith-thompson) at Arizona State University.
