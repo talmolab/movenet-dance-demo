@@ -1,7 +1,6 @@
 """General utilities."""
 
 import numpy as np
-import tensorflow as tf
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -56,12 +55,6 @@ KEYPOINT_EDGES = [
 ]
 
 EDGE_COLORS = sns.color_palette("tab20", len(KEYPOINT_EDGES))
-
-
-def disable_gpu_preallocation():
-    """Disable GPU pre-allocation so TensorFlow doesn't use all the GPU memory."""
-    for gpu in tf.config.get_visible_devices("GPU"):
-        tf.config.experimental.set_memory_growth(gpu, True)
 
 
 def center_pad(img: np.ndarray, image_size: int) -> np.ndarray:
@@ -268,3 +261,16 @@ def normalize_pose(
     norm_pose = (pose - origin) / norm_factor
 
     return norm_pose, origin, norm_factor
+
+
+def add_border(img: np.ndarray, width: int, color: Tuple[int, int, int]) -> np.ndarray:
+    """Add border around image."""
+    img = cv2.rectangle(
+        img,
+        (0, 0),
+        (img.shape[1] - 1, img.shape[0] - 1),
+        color=color,
+        thickness=width,
+        lineType=cv2.LINE_AA,
+    )
+    return img
