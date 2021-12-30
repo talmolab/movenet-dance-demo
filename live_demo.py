@@ -10,6 +10,7 @@ from time import perf_counter as time
 from threading import Thread
 from collections import deque
 from typing import Optional, Tuple
+import argparse
 
 
 class TargetPoses:
@@ -20,7 +21,7 @@ class TargetPoses:
         initial_target: Optional[int] = 0,
         border_width: int = 4,
         border_color: Tuple[int, int, int] = (255, 255, 255),
-        selected_width: int = 8,
+        selected_width: int = 12,
         selected_color: Tuple[int, int, int] = (0, 200, 0),
         completed_alpha: float = 0.7,
     ):
@@ -168,7 +169,25 @@ class LiveDemo:
 
         # Load target poses.
         self.target_poses = TargetPoses(
-            target_poses_path=self.target_poses_path, max_height=int(self.camera_height * self.render_scale)
+            target_poses_path=self.target_poses_path,
+            max_height=int(self.camera_height * self.render_scale),
+        )
+
+        # Specify nodes that will be used as targets.
+        # TODO: Parametrize this?
+        self.target_nodes = (
+            "left_shoulder",
+            "right_shoulder",
+            "left_elbow",
+            "right_elbow",
+            "left_wrist",
+            "right_wrist",
+            "left_hip",
+            "right_hip",
+            "left_knee",
+            "right_knee",
+            "left_ankle",
+            "right_ankle",
         )
 
         # Initialize buffers.
@@ -249,23 +268,8 @@ class LiveDemo:
                     norm_factor = np.linalg.norm(ref_pts[0] - ref_pts[1])
                     origin = ref_pts.mean(axis=0)
 
-                    target_nodes = [
-                        "left_shoulder",
-                        "right_shoulder",
-                        "left_elbow",
-                        "right_elbow",
-                        "left_wrist",
-                        "right_wrist",
-                        "left_hip",
-                        "right_hip",
-                        "left_knee",
-                        "right_knee",
-                        "left_ankle",
-                        "right_ankle",
-                    ]
-
                     n_in_target = 0
-                    for node_name in target_nodes:
+                    for node_name in self.target_nodes:
                         j = utils.KEYPOINT_NODES[node_name]
                         target_rel_pos = target_pose["norm_pose"][j]
 
@@ -278,17 +282,22 @@ class LiveDemo:
                         )
                         n_in_target += int(in_target)
 
-                    if n_in_target == len(target_pose):
+                    if n_in_target == len(self.target_nodes):
                         # Completed pose! Show visual indicator and move to next pose.
+                        # TODO: Hold for a min number of frames?
+                        #   Could store this in the pose_targets and use it to render a
+                        #   progress bar.
                         self.target_poses.complete_current()
                         self.target_poses.next_target()
 
                 # Alpha blend
-                img = cv2.addWeighted(img, self.blend_alpha, img0, 1 - self.blend_alpha, 0)
+                img = cv2.addWeighted(
+                    img, self.blend_alpha, img0, 1 - self.blend_alpha, 0
+                )
 
                 # Concatenate the rendered targets
                 img = np.concatenate([img, self.target_poses.render()], axis=1)
-                img = img[:, :int(self.camera_width * self.render_scale)]
+                img = img[:, : int(self.camera_width * self.render_scale)]
 
                 # Save final rendered image
                 self.frame = img
@@ -314,7 +323,8 @@ class LiveDemo:
             target_col = (0, 0, 255)
             unit_vec = (target - keypoint) / dist_to_target
             pt2 = (
-                unit_vec * min(self.max_arrow_length * self.render_scale, dist_to_target)
+                unit_vec
+                * min(self.max_arrow_length * self.render_scale, dist_to_target)
             ) + keypoint
             img = cv2.arrowedLine(
                 img,
@@ -374,10 +384,34 @@ class LiveDemo:
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-c", "--camera", help="Camera index to use.", type=int, default=0
+    )
+    parser.add_argument("--cpu", help="Disable GPU inference.", action="store_true")
+    parser.add_argument(
+        "-t",
+        "--target-poses",
+        help="Path to target poses YAML file.",
+        default="data/target_poses.yaml",
+    )
+    parser.add_argument(
+        "--tolerance",
+        help="Tolerance to the target pose locations. Higher is easier.",
+        type=float,
+        default=0.5,
+    )
+    args = parser.parse_args()
 
-    inference.disable_gpu_preallocation()
-    # inference.use_cpu_only()
+    if args.cpu:
+        inference.use_cpu_only()
+    else:
+        inference.disable_gpu_preallocation()
 
     # Run until stopped.
-    live_demo = LiveDemo()
+    live_demo = LiveDemo(
+        camera=args.camera,
+        target_poses_path=args.target_poses,
+        rel_target_radius=args.tolerance,
+    )
     live_demo.run()
