@@ -1,9 +1,12 @@
+"""General utilities."""
+
 import numpy as np
 import tensorflow as tf
 import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
 import cv2
+from collections import namedtuple
 
 from typing import Union, Tuple
 
@@ -28,6 +31,9 @@ KEYPOINT_NODES = {
     "right_ankle": 16,
 }
 
+Nodes = namedtuple("Nodes", list(KEYPOINT_NODES.keys()))
+NODES = Nodes(**KEYPOINT_NODES)
+
 KEYPOINT_EDGES = [
     (0, 1),
     (0, 2),
@@ -48,6 +54,8 @@ KEYPOINT_EDGES = [
     (12, 14),
     (14, 16),
 ]
+
+EDGE_COLORS = sns.color_palette("tab20", len(KEYPOINT_EDGES))
 
 
 def disable_gpu_preallocation():
@@ -227,3 +235,36 @@ def plot_pose(
             c=colors[k],
             **kwargs
         )
+
+
+def normalize_pose(
+    pose: np.ndarray, ref1: int = NODES.left_hip, ref2: int = NODES.right_hip
+) -> Tuple[np.ndarray, np.ndarray, float]:
+    """Normalize pose by reference coordinates.
+
+    Args:
+        pose: Keypoints as numpy array of shape (17, 2).
+        ref1: Index of reference node 1 (default: NODES.left_hip)
+        ref2: Index of reference node 2 (default: NODES.right_hip)
+
+    Returns:
+        Tuple of (norm_pose, origin, norm_factor).
+
+        norm_pose: The pose scaled by the distance between the two reference nodes and
+        centered at their midpoint.
+
+        origin: The origin coordinate as an array of shape (1, 2).
+
+        norm_factor: The distance between the reference points as a scalar.
+
+        If either node is missing, returns all NaNs.
+    """
+    ref_pts = pose[[ref1, ref2]]
+    if np.isnan(ref_pts).any():
+        return np.full(pose.shape, np.nan), np.nan, np.nan
+
+    norm_factor = np.linalg.norm(ref_pts[0] - ref_pts[1])
+    origin = ref_pts.mean(axis=0, keepdims=True)
+    norm_pose = (pose - origin) / norm_factor
+
+    return norm_pose, origin, norm_factor
