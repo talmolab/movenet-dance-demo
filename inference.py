@@ -26,6 +26,17 @@ MODELS = {
 }
 
 
+def disable_gpu_preallocation():
+    """Disable GPU pre-allocation so TensorFlow doesn't use all the GPU memory."""
+    for gpu in tf.config.get_visible_devices("GPU"):
+        tf.config.experimental.set_memory_growth(gpu, True)
+
+
+def use_cpu_only():
+    """Disable GPU usage."""
+    tf.config.set_visible_devices([], "GPU")
+
+
 def load_model(model_name: str) -> tf.keras.Model:
     """Load a MoveNet model by name.
 
