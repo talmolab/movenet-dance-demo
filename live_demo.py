@@ -153,6 +153,10 @@ class LiveDemo:
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.camera_height)
         self.capture.set(cv2.CAP_PROP_BRIGHTNESS, self.camera_brightness)
 
+        # Reset properties in case camera doesn't support the specified dimensions.
+        self.camera_width = int(self.capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.camera_height = int(self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
         # Initialize rendering.
         cv2.namedWindow("frame", cv2.WND_PROP_FULLSCREEN)
         cv2.setWindowProperty("frame", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
