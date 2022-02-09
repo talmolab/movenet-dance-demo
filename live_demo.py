@@ -11,6 +11,7 @@ from threading import Thread
 from collections import deque
 from typing import Optional, Tuple
 import argparse
+import os
 
 
 class TargetPoses:
@@ -147,7 +148,12 @@ class LiveDemo:
         self.target_poses_path = target_poses_path
 
         # Setup camera.
-        self.capture = cv2.VideoCapture(self.camera, cv2.CAP_DSHOW)
+
+        if os.name == "nt":
+            self.capture = cv2.VideoCapture(self.camera, cv2.CAP_DSHOW)
+            print(f"Camera (ID: {self.camera}) using DirectShow (Windows).")
+        else:
+            self.capture = cv2.VideoCapture(self.camera)
         self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 2)
         self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.camera_width)
         self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.camera_height)
@@ -156,6 +162,7 @@ class LiveDemo:
         # Reset properties in case camera doesn't support the specified dimensions.
         self.camera_width = int(self.capture.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.camera_height = int(self.capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        print(f"Camera (ID: {self.camera}) resolution: {self.camera_width} x {self.camera_height}")
 
         # Initialize rendering.
         cv2.namedWindow("frame", cv2.WND_PROP_FULLSCREEN)
@@ -403,7 +410,7 @@ if __name__ == "__main__":
         "--tolerance",
         help="Tolerance to the target pose locations. Higher is easier.",
         type=float,
-        default=0.5,
+        default=0.8,
     )
     args = parser.parse_args()
 
