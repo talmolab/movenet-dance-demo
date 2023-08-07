@@ -20,11 +20,11 @@ class TargetPoses:
         target_poses_path: str,
         max_height: int,
         initial_target: Optional[int] = 0,
-        border_width: int = 4,
+        border_width: int = 8,
         border_color: Tuple[int, int, int] = (255, 255, 255),
-        selected_width: int = 12,
+        selected_width: int = 16,
         selected_color: Tuple[int, int, int] = (0, 200, 0),
-        completed_alpha: float = 0.7,
+        completed_alpha: float = 0.85,
     ):
         self.target_poses_path = target_poses_path
         self.target_ind = initial_target
@@ -111,14 +111,14 @@ class LiveDemo:
         camera_brightness: int = 128,
         fps: float = 30,
         horizontal_mirror: bool = True,
-        render_scale: float = 1.0,
+        render_scale: float = 2.0,
         node_cmap: str = "tab20",
         node_radius: int = 8,
         node_thickness: int = 6,
         arrow_thickness: int = 5,
         max_arrow_length: int = 150,
         target_thickness: int = 5,
-        rel_target_radius: float = 0.4,
+        rel_target_radius: float = 0.8,
         blend_alpha: float = 0.6,
         model_name: str = "thunder",
         center_pad: bool = False,
@@ -166,7 +166,7 @@ class LiveDemo:
 
         # Initialize rendering.
         cv2.namedWindow("frame", cv2.WND_PROP_FULLSCREEN)
-        cv2.setWindowProperty("frame", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+        # cv2.setWindowProperty("frame", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
 
         # Load model.
         self.model = inference.load_model(model_name)
@@ -193,12 +193,12 @@ class LiveDemo:
             "right_elbow",
             "left_wrist",
             "right_wrist",
-            "left_hip",
-            "right_hip",
-            "left_knee",
-            "right_knee",
-            "left_ankle",
-            "right_ankle",
+            # "left_hip",
+            # "right_hip",
+            # "left_knee",
+            # "right_knee",
+            # "left_ankle",
+            # "right_ankle",
         )
 
         # Initialize buffers.
