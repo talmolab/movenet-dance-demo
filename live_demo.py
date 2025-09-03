@@ -394,7 +394,8 @@ class LiveDemo:
             self.show_frame()
 
 
-if __name__ == "__main__":
+def main():
+    """Main entrypoint for the live demo CLI."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-c", "--camera", help="Camera index to use.", type=int, default=0
@@ -426,3 +427,7 @@ if __name__ == "__main__":
         rel_target_radius=args.tolerance,
     )
     live_demo.run()
+
+
+if __name__ == "__main__":
+    main()

@@ -7,7 +7,34 @@ A real-time demo running on webcam feed that guides subject to move to match pre
 *Move your body to match each of the target poses on the right!*
 
 ## Setup
+
+### Option 1: Using uv (recommended)
+
+Install and run directly from GitHub:
+```bash
+# CPU-only (works on all platforms)
+uvx --from git+https://github.com/talmolab/movenet-dance-demo live-demo
+
+# With GPU acceleration
+uvx --from git+https://github.com/talmolab/movenet-dance-demo --with movenet-dance-demo[cuda] live-demo      # Linux CUDA
+uvx --from git+https://github.com/talmolab/movenet-dance-demo --with movenet-dance-demo[apple-gpu] live-demo # Apple Silicon
 ```
+
+Or install locally:
+```bash
+git clone https://github.com/talmolab/movenet-dance-demo
+cd movenet-dance-demo
+uv sync
+uv run live-demo
+```
+
+**For GPU acceleration:**
+- Apple Silicon Mac: `uv sync --extra apple-gpu`
+- Linux with CUDA: `uv sync --extra cuda`
+
+### Option 2: Using conda
+
+```bash
 conda env create -f environment.yml -n movenet-dance-demo
 conda activate movenet-dance-demo
 ```
@@ -18,18 +45,40 @@ For an example of standalone inference, see the notebook: [`inference_demo.ipynb
 
 
 ## Usage
+
+### Using uv
+
 To run the demo:
+```bash
+uv run live-demo
+# or if installed via uvx:
+uvx --from git+https://github.com/talmolab/movenet-dance-demo live-demo
 ```
+
+To use a different camera:
+```bash
+uv run live-demo -c 1
+```
+
+To make it easier, increase the target tolerance:
+```bash
+uv run live-demo --tolerance 0.7
+```
+
+### Using conda/python directly
+
+To run the demo:
+```bash
 python live_demo.py
 ```
 
 To use a different camera:
-```
+```bash
 python live_demo.py -c 1
 ```
 
 To make it easier, increase the target tolerance:
-```
+```bash
 python live_demo.py --tolerance 0.7
 ```
 
